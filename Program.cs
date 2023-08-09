@@ -52,6 +52,25 @@ namespace CombinedLetters
 
                 Environment.Exit(0);
             }
+            public static void ClearTestFiles()
+            {
+                string currDirectory = Directory.GetCurrentDirectory();
+
+                if(Directory.Exists(currDirectory + @"\Input"))
+                {
+                    Directory.Delete(currDirectory + @"\Input", true);
+                }
+                if(Directory.Exists(currDirectory + @"\Archive"))
+                {
+                    Directory.Delete(currDirectory + @"\Archive", true);
+                }
+                if(Directory.Exists(currDirectory + @"\Output"))
+                {
+                    Directory.Delete(currDirectory + @"\Output", true);
+                }
+
+                Environment.Exit(0);
+            }
         public void CombineTwoLetters(string inputFile1, string inputFile2, string resultFile)
         {
             try{
@@ -132,6 +151,10 @@ namespace CombinedLetters
                         Console.WriteLine("Error: Invalid Arguments");
                     }
                 }
+                else if (args[0] == "-clear")
+                {
+                    LetterService.ClearTestFiles();
+                }
                 else
                 {
                     Console.WriteLine("Error: Invalid Arguments");
@@ -144,6 +167,12 @@ namespace CombinedLetters
             //Regex pattern to match university ids in file names
             string idPattern = @"[0-9]{8}";
             string currDirectory = Directory.GetCurrentDirectory();
+
+            if(!Directory.Exists(currDirectory + @"\Input\Admission"))
+            {
+                Console.WriteLine("Error: Input folders missing. Generate test files first.");
+                Environment.Exit(-1);
+            }
 
 
 
