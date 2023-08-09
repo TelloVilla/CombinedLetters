@@ -91,19 +91,23 @@ namespace CombinedLetters
         {
             string currDirectory = Directory.GetCurrentDirectory();
 
-            string[] admissionsToArchive = Directory.GetFiles(currDirectory + @"\Input\Admission\" + date, "*.txt");
-            string[] scholarshipToArchive = Directory.GetFiles(currDirectory + @"\Input\Scholarship\" + date, "*.txt");
+            
 
-            foreach (string admission in admissionsToArchive)
-            {
-                File.Move(admission, currDirectory + @"\Archive\Admission\" + date + @"\" + Path.GetFileName(admission));
+            if(Directory.Exists(currDirectory + @"\Input\Admission\" + date)){
+                string[] admissionsToArchive = Directory.GetFiles(currDirectory + @"\Input\Admission\" + date, "*.txt");
+                 foreach (string admission in admissionsToArchive)
+                {
+                    File.Move(admission, currDirectory + @"\Archive\Admission\" + date + @"\" + Path.GetFileName(admission));
+                }
             }
-
-            foreach (string scholarship in scholarshipToArchive)
+            if(Directory.Exists(currDirectory + @"\Input\Scholarship\" + date))
             {
-                File.Move(scholarship, currDirectory + @"\Archive\Scholarship\" + date + @"\" + Path.GetFileName(scholarship));
+                string[] scholarshipToArchive = Directory.GetFiles(currDirectory + @"\Input\Scholarship\" + date, "*.txt");
+                foreach (string scholarship in scholarshipToArchive)
+                {
+                    File.Move(scholarship, currDirectory + @"\Archive\Scholarship\" + date + @"\" + Path.GetFileName(scholarship));
+                }
             }
-
         }
     }
     class Progam
@@ -127,7 +131,6 @@ namespace CombinedLetters
                     {
                         Console.WriteLine("Error: Invalid Arguments");
                     }
-
                 }
                 else
                 {
@@ -149,16 +152,50 @@ namespace CombinedLetters
 
             foreach(string day in admissionDirectories)
             {
+                //Variables for Reports
+                List<string> combinedIds = new List<string>();
+                int totalCombined = 0;
+
+                //For each day get All File paths and names
                 string daySubstring = day.Substring(day.Length - 8, 8);
                 string[] admissionFiles = Directory.GetFiles(day, "*.txt");
-                string[] scholarshipFiles = Directory.GetFiles(currDirectory + @"\Input\Scholarship\" + daySubstring, "*.txt");
+
+                /* If Scholarship does not have the same date folder then archive day and move on to next day
+                as there will be no matches */
+                if(!Directory.Exists(currDirectory + @"\Input\Scholarship\" + daySubstring))
+                {
+                    letterService.ArchiveDay(daySubstring);
+                    try
+                    {
+                        File.WriteAllText(currDirectory + @"\Output\" + daySubstring + @"\" + daySubstring + "-Report.txt",
+                        DateTime.Now.ToString("MM/dd/yyyy") + " Report\n" 
+                        + "----------\n"
+                        + "Number of Combined Letters: " + totalCombined
+                        + "\n"
+                        );
+                        File.AppendAllLines(currDirectory + @"\Output\" + daySubstring + @"\" + daySubstring + " Report.txt", combinedIds);
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine("Report Generation Error: " + ex.Message);
+                    }
+
+                    continue;
+
+                }
+
+                string[] scholarshipFiles = Directory.GetFiles(currDirectory + @"\Input\Scholarship\" + daySubstring);
                 string[] admissionFileNames = admissionFiles.Select<string, string>(Path.GetFileName).ToArray();
                 string[] scholarshipFileNames = scholarshipFiles.Select<string, string>(Path.GetFileName).ToArray();
 
-                int totalCombined = 0;
+                
+
+                
+                
 
                 for(int i = 0; i < admissionFiles.Length; i++)
                 {
+                    //Capture university id from filename
                     Match id = Regex.Match(admissionFileNames[i], idPattern);
                     if(id.Success)
                     {
@@ -167,9 +204,11 @@ namespace CombinedLetters
                             Match sId = Regex.Match(scholarshipFileNames[j], idPattern);
                             if(sId.Success)
                             {
+                                //Check for match in corresponding Scholarship folder
                                 if(id.Value == sId.Value)
                                 {
                                     totalCombined++;
+                                    combinedIds.Add(id.Value);
                                     letterService.CombineTwoLetters(
                                         admissionFiles[i], scholarshipFiles[j],
                                         currDirectory + @"\Output\" + daySubstring + @"\combined-" + id.Value + ".txt"
@@ -179,7 +218,6 @@ namespace CombinedLetters
                                         admissionFiles[i], currDirectory + @"\Archive\Admission\" + daySubstring + @"\" + admissionFileNames[i],
                                         scholarshipFiles[j], currDirectory + @"\Archive\Scholarship\" + daySubstring + @"\" + scholarshipFileNames[j]
                                     );
-
                                     
                                 }
                             }
@@ -189,6 +227,21 @@ namespace CombinedLetters
                 }
                 //Archive Last files without matches for the day
                 letterService.ArchiveDay(daySubstring);
+                try
+                {
+                    File.WriteAllText(currDirectory + @"\Output\" + daySubstring + @"\" + daySubstring + "-Report.txt",
+                    DateTime.Now.ToString("MM/dd/yyyy") + " Report\n" 
+                    + "----------\n"
+                    + "Number of Combined Letters: " + totalCombined
+                    + "\n"
+                    );
+                    File.AppendAllLines(currDirectory + @"\Output\" + daySubstring + @"\" + daySubstring + "-Report.txt", combinedIds);
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine("Report Generation Error: " + ex.Message);
+                }
+                
             }
 
         }
