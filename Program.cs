@@ -29,7 +29,8 @@ namespace CombinedLetters
                     Directory.CreateDirectory(currDirectory + @"\Input\Admission\" + (20230501 + i));
                     Directory.CreateDirectory(currDirectory + @"\Input\Scholarship\" + (20230501 + i));
                     Directory.CreateDirectory(currDirectory + @"\Output\" + (20230501 + i));
-                    Directory.CreateDirectory(currDirectory + @"\Archive\" + (20230501 + i));
+                    Directory.CreateDirectory(currDirectory + @"\Archive\Admission\" + (20230501 + i));
+                    Directory.CreateDirectory(currDirectory + @"\Archive\Scholarship\" + (20230501 + i));
                 }
                 //Create files with random ids
                 foreach(string day in Directory.EnumerateDirectories(currDirectory + @"\Input\Admission"))
@@ -72,15 +73,26 @@ namespace CombinedLetters
             }
             
         }
+
+        public void ArchiveTwoLetters(string inputFile1, string output1, string inputFile2, string output2)
+        {
+            try
+            {
+                File.Move(inputFile1, output1);
+                File.Move(inputFile2, output2);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Archiving Error: " + ex.Message);
+            }
+        }
     }
     class Progam
     {
         static void Main(string[] args)
         {
 
-            LetterService letterService= new LetterService();
             
-
             if(args.Length > 0)
             {
                 int fileNumber;
@@ -105,6 +117,9 @@ namespace CombinedLetters
                     Environment.Exit(-1);
                 }
             }
+
+            LetterService letterService= new LetterService();
+
             //Regex pattern to match university ids in file names
             string idPattern = @"[0-9]{8}";
             string currDirectory = Directory.GetCurrentDirectory();
@@ -131,7 +146,15 @@ namespace CombinedLetters
                             {
                                 if(id.Value == sId.Value)
                                 {
-                                    letterService.CombineTwoLetters(admissionFiles[i], scholarshipFiles[j], currDirectory + @"\Output\combined-" + id.Value + ".txt");
+                                    letterService.CombineTwoLetters(admissionFiles[i], scholarshipFiles[j], currDirectory + @"\Output\" + daySubstring + @"\combined-" + id.Value + ".txt");
+
+                                    // File.Move(admissionFiles[i], currDirectory + @"\Archive\" + daySubstring + @"\Admission\" + admissionFileNames[i]);
+                                    // File.Move(scholarshipFiles[j], currDirectory + @"\Archive\" + daySubstring + @"\Scholarship\" + scholarshipFileNames[j]);
+                                    letterService.ArchiveTwoLetters(
+                                        admissionFiles[i], currDirectory + @"\Archive\" + daySubstring + @"\Admission\" + admissionFileNames[i],
+                                        scholarshipFiles[j], currDirectory + @"\Archive\" + daySubstring + @"\Scholarship\" + scholarshipFileNames[j]
+                                    );
+
                                 }
                             }
                         }
