@@ -10,86 +10,26 @@ namespace CombinedLetters
 
     public class LetterService : ILetterService
     {
-        static void Main(string[] args)
-        {
-            
-
-            if(args.Length > 0)
-            {
-                int fileNumber;
-
-                if (args[0] == "-gentest")
-                {
-                    bool numberConvert = int.TryParse(args[1], out fileNumber);
-                    if (numberConvert && fileNumber > 0)
-                    {
-                        GenTests(fileNumber);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Error: Invalid Arguments");
-                        
-                    }
-
-                }
-                else
-                {
-                    Console.WriteLine("Error: Invalid Arguments");
-                    Environment.Exit(-1);
-                }
-            }
-
-            string idPattern = @"[0-9]{8}";
-            string currDirectory = Directory.GetCurrentDirectory();
-
-            string[] admissionDirectories = Directory.GetDirectories(currDirectory + @"\Input\Admission");
-            
-
-            foreach(string day in admissionDirectories)
-            {
-                string daySubstring = day.Substring(day.Length - 8, 8);
-                string[] admissionFiles = Directory.GetFiles(day, "*.txt");
-                string[] scholarshipFiles = Directory.GetFiles(currDirectory + @"\Input\Scholarship\" + daySubstring, "*.txt");
-                string[] admissionFileNames = admissionFiles.Select<string, string>(Path.GetFileName).ToArray();
-                string[] scholarshipFileNames = scholarshipFiles.Select<string, string>(Path.GetFileName).ToArray();
-
-                for(int i = 0; i < admissionFiles.Length; i++){
-                    Match id = Regex.Match(admissionFileNames[i], idPattern);
-                    if(id.Success)
-                    {
-                        for(int j = 0; j < scholarshipFiles.Length; j++)
-                        {
-                            Match sId = Regex.Match(scholarshipFileNames[j], idPattern);
-                            if(sId.Success)
-                            {
-                                if(id.Value == sId.Value)
-                                {
-                                    
-                                }
-                            }
-                        }
-                    }
-                }
-
-            }
-
-        }
+        
         public static void GenTests(int fileNumber)
             {
                 string currDirectory = Directory.GetCurrentDirectory();
 
                 Random rand = new Random();
                 //Create directories 
-                if(!Directory.Exists(currDirectory + @"\Input\"))
-                {
-                    Directory.CreateDirectory(currDirectory + @"\Input\Admission");
-                    Directory.CreateDirectory(currDirectory + @"\Input\Scholarship");
-                }
+                
+                Directory.CreateDirectory(currDirectory + @"\Input\Admission");
+                Directory.CreateDirectory(currDirectory + @"\Input\Scholarship");
+                Directory.CreateDirectory(currDirectory + @"\Output");
+                Directory.CreateDirectory(currDirectory + @"\Archive");
+                
                 //Create date directories for 30 days
                 for(int i = 0; i < 30; i++)
                 {
                     Directory.CreateDirectory(currDirectory + @"\Input\Admission\" + (20230501 + i));
                     Directory.CreateDirectory(currDirectory + @"\Input\Scholarship\" + (20230501 + i));
+                    Directory.CreateDirectory(currDirectory + @"\Output\" + (20230501 + i));
+                    Directory.CreateDirectory(currDirectory + @"\Archive\" + (20230501 + i));
                 }
                 //Create files with random ids
                 foreach(string day in Directory.EnumerateDirectories(currDirectory + @"\Input\Admission"))
@@ -133,5 +73,74 @@ namespace CombinedLetters
             
         }
     }
-    
+    class Progam
+    {
+        static void Main(string[] args)
+        {
+
+            LetterService letterService= new LetterService();
+            
+
+            if(args.Length > 0)
+            {
+                int fileNumber;
+
+                if (args[0] == "-gentest")
+                {
+                    bool numberConvert = int.TryParse(args[1], out fileNumber);
+                    if (numberConvert && fileNumber > 0)
+                    {
+                        LetterService.GenTests(fileNumber);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error: Invalid Arguments");
+                        
+                    }
+
+                }
+                else
+                {
+                    Console.WriteLine("Error: Invalid Arguments");
+                    Environment.Exit(-1);
+                }
+            }
+            //Regex pattern to match university ids in file names
+            string idPattern = @"[0-9]{8}";
+            string currDirectory = Directory.GetCurrentDirectory();
+
+            string[] admissionDirectories = Directory.GetDirectories(currDirectory + @"\Input\Admission");
+            
+
+            foreach(string day in admissionDirectories)
+            {
+                string daySubstring = day.Substring(day.Length - 8, 8);
+                string[] admissionFiles = Directory.GetFiles(day, "*.txt");
+                string[] scholarshipFiles = Directory.GetFiles(currDirectory + @"\Input\Scholarship\" + daySubstring, "*.txt");
+                string[] admissionFileNames = admissionFiles.Select<string, string>(Path.GetFileName).ToArray();
+                string[] scholarshipFileNames = scholarshipFiles.Select<string, string>(Path.GetFileName).ToArray();
+
+                for(int i = 0; i < admissionFiles.Length; i++){
+                    Match id = Regex.Match(admissionFileNames[i], idPattern);
+                    if(id.Success)
+                    {
+                        for(int j = 0; j < scholarshipFiles.Length; j++)
+                        {
+                            Match sId = Regex.Match(scholarshipFileNames[j], idPattern);
+                            if(sId.Success)
+                            {
+                                if(id.Value == sId.Value)
+                                {
+                                    letterService.CombineTwoLetters(admissionFiles[i], scholarshipFiles[j], currDirectory + @"\Output\combined-" + id.Value + ".txt");
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+
+        }
+
+    }
 }
