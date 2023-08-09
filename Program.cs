@@ -10,30 +10,6 @@ namespace CombinedLetters
 
     public class LetterService : ILetterService
     {
-        public void CombineTwoLetters(string inputFile, string inputFile2, string resultFile)
-        {
-            try{
-                string content1 = File.ReadAllText(inputFile1);
-                string content2 = File.ReadAllText(inputFile2);
-
-                try
-                {
-                    File.WriteAllText(resultFile, content1 + content2);
-                }
-                catch(Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            
-        }
-    }
-    class Program
-    {
         static void Main(string[] args)
         {
             
@@ -88,22 +64,14 @@ namespace CombinedLetters
                             {
                                 if(id.Value == sId.Value)
                                 {
-
+                                    
                                 }
                             }
                         }
                     }
                 }
 
-
             }
-
-
-
-
-
-
-            
 
         }
         public static void GenTests(int fileNumber)
@@ -143,5 +111,27 @@ namespace CombinedLetters
 
                 Environment.Exit(0);
             }
+        public void CombineTwoLetters(string inputFile1, string inputFile2, string resultFile)
+        {
+            try{
+                string content1 = File.ReadAllText(inputFile1);
+                string content2 = File.ReadAllText(inputFile2);
+
+                try
+                {
+                    File.WriteAllText(resultFile, content1 + content2);
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            
+        }
     }
+    
 }
