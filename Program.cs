@@ -86,6 +86,21 @@ namespace CombinedLetters
                 Console.WriteLine("Archiving Error: " + ex.Message);
             }
         }
+
+        public void ArchiveDay(string date)
+        {
+            string currDirectory = Directory.GetCurrentDirectory();
+
+            string[] admissionsToArchive = Directory.GetFiles(currDirectory + @"\Input\Admission\" + date, "*.txt");
+            string[] scholarshipToArchive = Directory.GetFiles(currDirectory + @"\Input\Scholarship\" + date, "*.txt");
+
+            foreach (string admission in admissionsToArchive)
+            {
+                File.Move(admission, currDirectory + @"\Archive\");
+                
+            }
+
+        }
     }
     class Progam
     {
@@ -124,6 +139,8 @@ namespace CombinedLetters
             string idPattern = @"[0-9]{8}";
             string currDirectory = Directory.GetCurrentDirectory();
 
+            
+
             string[] admissionDirectories = Directory.GetDirectories(currDirectory + @"\Input\Admission");
             
 
@@ -148,11 +165,9 @@ namespace CombinedLetters
                                 {
                                     letterService.CombineTwoLetters(admissionFiles[i], scholarshipFiles[j], currDirectory + @"\Output\" + daySubstring + @"\combined-" + id.Value + ".txt");
 
-                                    // File.Move(admissionFiles[i], currDirectory + @"\Archive\" + daySubstring + @"\Admission\" + admissionFileNames[i]);
-                                    // File.Move(scholarshipFiles[j], currDirectory + @"\Archive\" + daySubstring + @"\Scholarship\" + scholarshipFileNames[j]);
                                     letterService.ArchiveTwoLetters(
-                                        admissionFiles[i], currDirectory + @"\Archive\" + daySubstring + @"\Admission\" + admissionFileNames[i],
-                                        scholarshipFiles[j], currDirectory + @"\Archive\" + daySubstring + @"\Scholarship\" + scholarshipFileNames[j]
+                                        admissionFiles[i], currDirectory + @"\Archive\" + @"\Admission\" + daySubstring + @"\" + admissionFileNames[i],
+                                        scholarshipFiles[j], currDirectory + @"\Archive\" + @"\Scholarship\" + daySubstring + @"\" + scholarshipFileNames[j]
                                     );
 
                                 }
