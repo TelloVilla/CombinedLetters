@@ -96,8 +96,12 @@ namespace CombinedLetters
 
             foreach (string admission in admissionsToArchive)
             {
-                File.Move(admission, currDirectory + @"\Archive\");
-                
+                File.Move(admission, currDirectory + @"\Archive\Admission\" + date + @"\" + Path.GetFileName(admission));
+            }
+
+            foreach (string scholarship in scholarshipToArchive)
+            {
+                File.Move(scholarship, currDirectory + @"\Archive\Scholarship\" + date + @"\" + Path.GetFileName(scholarship));
             }
 
         }
@@ -122,7 +126,6 @@ namespace CombinedLetters
                     else
                     {
                         Console.WriteLine("Error: Invalid Arguments");
-                        
                     }
 
                 }
@@ -139,7 +142,7 @@ namespace CombinedLetters
             string idPattern = @"[0-9]{8}";
             string currDirectory = Directory.GetCurrentDirectory();
 
-            
+
 
             string[] admissionDirectories = Directory.GetDirectories(currDirectory + @"\Input\Admission");
             
@@ -152,7 +155,10 @@ namespace CombinedLetters
                 string[] admissionFileNames = admissionFiles.Select<string, string>(Path.GetFileName).ToArray();
                 string[] scholarshipFileNames = scholarshipFiles.Select<string, string>(Path.GetFileName).ToArray();
 
-                for(int i = 0; i < admissionFiles.Length; i++){
+                int totalCombined = 0;
+
+                for(int i = 0; i < admissionFiles.Length; i++)
+                {
                     Match id = Regex.Match(admissionFileNames[i], idPattern);
                     if(id.Success)
                     {
@@ -163,19 +169,26 @@ namespace CombinedLetters
                             {
                                 if(id.Value == sId.Value)
                                 {
-                                    letterService.CombineTwoLetters(admissionFiles[i], scholarshipFiles[j], currDirectory + @"\Output\" + daySubstring + @"\combined-" + id.Value + ".txt");
-
-                                    letterService.ArchiveTwoLetters(
-                                        admissionFiles[i], currDirectory + @"\Archive\" + @"\Admission\" + daySubstring + @"\" + admissionFileNames[i],
-                                        scholarshipFiles[j], currDirectory + @"\Archive\" + @"\Scholarship\" + daySubstring + @"\" + scholarshipFileNames[j]
+                                    totalCombined++;
+                                    letterService.CombineTwoLetters(
+                                        admissionFiles[i], scholarshipFiles[j],
+                                        currDirectory + @"\Output\" + daySubstring + @"\combined-" + id.Value + ".txt"
                                     );
 
+                                    letterService.ArchiveTwoLetters(
+                                        admissionFiles[i], currDirectory + @"\Archive\Admission\" + daySubstring + @"\" + admissionFileNames[i],
+                                        scholarshipFiles[j], currDirectory + @"\Archive\Scholarship\" + daySubstring + @"\" + scholarshipFileNames[j]
+                                    );
+
+                                    
                                 }
                             }
                         }
                     }
+                    
                 }
-
+                //Archive Last files without matches for the day
+                letterService.ArchiveDay(daySubstring);
             }
 
         }
