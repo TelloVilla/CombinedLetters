@@ -115,7 +115,15 @@ namespace CombinedLetters
                 string[] admissionsToArchive = Directory.GetFiles(currDirectory + @"\Input\Admission\" + date, "*.txt");
                  foreach (string admission in admissionsToArchive)
                 {
-                    File.Move(admission, currDirectory + @"\Archive\Admission\" + date + @"\" + Path.GetFileName(admission));
+                    try
+                    {
+                        File.Move(admission, currDirectory + @"\Archive\Admission\" + date + @"\" + Path.GetFileName(admission));
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine("Archiving Error: " + ex.Message);
+                    }
+                    
                     
                 }
                 
@@ -126,7 +134,15 @@ namespace CombinedLetters
                 string[] scholarshipToArchive = Directory.GetFiles(currDirectory + @"\Input\Scholarship\" + date, "*.txt");
                 foreach (string scholarship in scholarshipToArchive)
                 {
-                    File.Move(scholarship, currDirectory + @"\Archive\Scholarship\" + date + @"\" + Path.GetFileName(scholarship));
+                    try
+                    {
+                        File.Move(scholarship, currDirectory + @"\Archive\Scholarship\" + date + @"\" + Path.GetFileName(scholarship));
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine("Archiving Error: " + ex.Message);
+                    }
+
                 }
                 Directory.Delete(currDirectory + @"\Input\Scholarship\" + date);
             }
