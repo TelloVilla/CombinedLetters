@@ -4,9 +4,9 @@
 
 An application that will go though an Input folder and match together admission and scholarship letters based on student ids and combining them into a single file to save paper
 
-## Test Command
+## Test Generator Command
 
-Creates date folders in the input folder for 
+Creates date folders in the input folder for Admissions and Scholarships across 30 days. Generates random student ids and creates admission files and scholarship files based on it. A corresponding scholarship is created every other time so only have of admissions have a matching scholarship letter on a date.
 
 ## Installation and Running
 
@@ -23,7 +23,7 @@ Creates date folders in the input folder for
 
 ## Commands
 ```
-// Generate needed directories for testing and number of files per day
+// Generate needed directories for testing and number of files per date directory
 -gentest <# of files>
 
 // Clear test files and directories
