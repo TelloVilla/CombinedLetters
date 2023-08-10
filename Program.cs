@@ -17,7 +17,6 @@ namespace CombinedLetters
 
                 Random rand = new Random();
                 //Create directories 
-                
                 Directory.CreateDirectory(currDirectory + @"\Input\Admission");
                 Directory.CreateDirectory(currDirectory + @"\Input\Scholarship");
                 Directory.CreateDirectory(currDirectory + @"\Output");
@@ -117,7 +116,10 @@ namespace CombinedLetters
                  foreach (string admission in admissionsToArchive)
                 {
                     File.Move(admission, currDirectory + @"\Archive\Admission\" + date + @"\" + Path.GetFileName(admission));
+                    
                 }
+                
+                Directory.Delete(currDirectory + @"\Input\Admission\" + date);
             }
             if(Directory.Exists(currDirectory + @"\Input\Scholarship\" + date))
             {
@@ -126,6 +128,7 @@ namespace CombinedLetters
                 {
                     File.Move(scholarship, currDirectory + @"\Archive\Scholarship\" + date + @"\" + Path.GetFileName(scholarship));
                 }
+                Directory.Delete(currDirectory + @"\Input\Scholarship\" + date);
             }
         }
     }
